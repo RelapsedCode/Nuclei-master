@@ -7,17 +7,18 @@
 # upper_brown = np.array([40, 255, 255])
 
 import cv2 as cv, cv2
-import sys
+from PIL import Image
 import numpy as np
-from matplotlib import pylab
+from functools import reduce
 import matplotlib.pyplot as plt
+from matplotlib import pylab
 import mahotas as mh
 import requests
-from functools import reduce
+import sys
 import time
 
 hsvValues = {
-            'color_1': {'l_h': 55, 'l_s': 30, 'l_v': 55, 'u_h': 179, 'u_s': 255, 'u_v': 113},
+            'color_1': {'l_h': 0, 'l_s': 0, 'l_v': 0, 'u_h': 0, 'u_s': 0, 'u_v': 0},
         }
 
 def createWindows():
@@ -71,6 +72,10 @@ def dicValues(flag):
     elif flag == 2:
         hsvValues = {
             'color_1': {'l_h': 102, 'l_s': 56, 'l_v': 100, 'u_h': 179, 'u_s': 255, 'u_v': 190},
+        }
+    elif flag == 0:
+        hsvValues = {
+            'color_1': {'l_h': 0, 'l_s': 0, 'l_v': 0, 'u_h': 0, 'u_s': 0, 'u_v': 0},
         }
 
 
@@ -216,6 +221,7 @@ def overlap():
     # overlap_img[:] = (0, 0, 255)
     # overlap_img[0:height, 0:width // 4, 0:depth] = 0  # DO THIS INSTEAD
 
+    CountColouredPixels(overlap_img)
 
 def GaussianBlur(grayImg, ksize):
     # windowName.append(GaussianBlur.__name__)
@@ -269,8 +275,51 @@ def CountPixels(mask, hsv, openimg):
     print('black pixels (fine) define: ' + str(round(blackPixPerc, 2)) + '%' + ' of the image.')
 
 
-def CountColouredPixels():
-    pass
+def CountColouredPixels(mask):
+    maskShape = mask.shape
+    allPixels = 1
+    for i in maskShape:
+        allPixels *= i
+    print('simple for loop: ' + str(allPixels))
+    allPixels2 = reduce(lambda x, y: x * y, maskShape)
+    print('lambda expression: ' + str(allPixels2))
+    allPixels3 = mask.size
+    print('img.size function: ' + str(allPixels3))
+
+    blackPixelsNumber = 0
+    whitePixelsNumber = 0
+    redPixelsNumber = 0
+    otherPixelsValues = 0
+
+
+
+    # for i in np.ndindex(mask.shape[:2]):
+    #     if i == (0, 0, 0):
+    #         blackPixelsNumber += 1
+    #     elif i == (255, 255, 255):
+    #         whitePixelsNumber += 1
+    #     elif i == (0, 0, 255):
+    #         redPixelsNumber += 1
+    #     else:
+    #         otherPixelsValues += 1
+
+    if (otherPixelsValues != 0):
+        print("It seems like your image contains more colours than are specified. Check if the image is thresholded properly.")
+
+    im = mask.copy()
+
+    white = [255, 255, 255]
+
+    result = np.count_nonzero(np.all(im == white, axis=2))
+    print( result, " out of ", allPixels)
+    # whitePixPerc = (result2 / allPixels) * 100
+    # blackPixPerc = (white / allPixels) * 100
+    # redPixPerc = (result3 / allPixels) * 100
+
+    # print('White pixels are: ' + str(round(whitePixPerc, 2)) + '%' + ' of the image.')
+    print('Black pixels are: ' + str(round(result, 2)) + '%' + ' of the image.')
+    # print('Red pixels are: ' + str(round(redPixPerc, 2)) + '%' + ' of the image.')
+    # print('Others pixels are: ' + str(round(otherPixelsValues, 2)) + '%' + ' of the image. If this value is different than 0 than you have a problem.')
 
 
 def ReportToCSV():
@@ -310,7 +359,7 @@ def main():
     createWindows()
     CreateTrackbars()
     SetVals()
-    dicValues(1)
+    dicValues(0)
     setTrackbarsInitialPosition(hsvValues)
     # Init that shit
     ProcessImage(0)
