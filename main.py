@@ -16,6 +16,10 @@ import requests
 from functools import reduce
 import time
 
+hsvValues = {
+            'color_1': {'l_h': 55, 'l_s': 30, 'l_v': 55, 'u_h': 179, 'u_s': 255, 'u_v': 113},
+        }
+
 def createWindows(val):
     cv2.namedWindow("Trackbars")
     cv2.resizeWindow("Trackbars", 1000, 500)
@@ -23,6 +27,7 @@ def createWindows(val):
     cv2.namedWindow("Results")
     cv2.resizeWindow("Results", 1920, 1200)
     pass
+
 
 def CreateTrackbars(val):
     cv2.createTrackbar("L - H", "Trackbars", 0, 179, ProcessImage)
@@ -38,23 +43,20 @@ def CreateTrackbars(val):
     cv.createTrackbar("ksize", "Trackbars", 0, 21, ProcessImage)
     pass
 
-def idontdoshit():
-    print('pAsS dA BuTThAaA')
-
 
 def SetVals(val):
     # Make them DICS?
-    global hsvValues
-    hsvValues = {
-        'color_1': {'l_h': 0, 'l_s': 0, 'l_v': 0, 'u_h': 0, 'h_s': 0, 'u_v': 0},
-    }
 
-    hsvValues['color_1']['l_h'] = 5
-    hsvValues['color_1']['l_s'] = 50
-    hsvValues['color_1']['l_v'] = 50
-    hsvValues['color_1']['u_h'] = 40
-    hsvValues['color_1']['u_s'] = 255
-    hsvValues['color_1']['u_v'] = 255
+    # hsvValues = {
+    #     'color_1': {'l_h': 0, 'l_s': 0, 'l_v': 0, 'u_h': 0, 'u_s': 0, 'u_v': 0},
+    # }
+
+    # hsvValues['color_1']['l_h'] = 5
+    # hsvValues['color_1']['l_s'] = 50
+    # hsvValues['color_1']['l_v'] = 50
+    # hsvValues['color_1']['u_h'] = 40
+    # hsvValues['color_1']['u_s'] = 255
+    # hsvValues['color_1']['u_v'] = 255
 
     global mask_3, mask_1, mask_2
     global lower_range, lower_range2
@@ -69,19 +71,57 @@ def SetVals(val):
     lower_range = np.array([hsvValues['color_1']['l_h'], hsvValues['color_1']['l_s'], hsvValues['color_1']['l_v']])
     upper_range = np.array([hsvValues['color_1']['u_h'], hsvValues['color_1']['u_s'], hsvValues['color_1']['u_v']])
 
-    #img = cv2.imread(r"D:\side-projects\nuclei\img\" + imagetoUse)
+    # img = cv2.imread(r"D:\side-projects\nuclei\img\" + imagetoUse)
     img = cv2.imread(r"D:\side-projects\nuclei\img\irl-img\ki001.jpg")
 
     cv2.setTrackbarPos("Morph Open", "Trackbars", morphOpenKernel)
     cv2.setTrackbarPos("Morph Open", "Trackbars", morphCloseKernel)
 
-def setTrackbarsInitialPosition(val):
-    cv2.setTrackbarPos("L - H", "Trackbars", hsvValues['color_1']['l_h'])
-    cv2.setTrackbarPos("L - S", "Trackbars", hsvValues['color_1']['l_s'])
-    cv2.setTrackbarPos("L - V", "Trackbars", hsvValues['color_1']['l_v'])
-    cv2.setTrackbarPos("U - H", "Trackbars", hsvValues['color_1']['u_h'])
-    cv2.setTrackbarPos("U - S", "Trackbars", hsvValues['color_1']['u_s'])
-    cv2.setTrackbarPos("U - V", "Trackbars", hsvValues['color_1']['u_v'])
+
+def dicValues(flag):
+    global hsvValues
+    if flag == 1:
+        hsvValues = {
+            'color_1': {'l_h': 0, 'l_s': 0, 'l_v': 0, 'u_h': 179, 'u_s': 255, 'u_v': 93},
+        }
+    elif flag == 2:
+        hsvValues = {
+            'color_1': {'l_h': 102, 'l_s': 56, 'l_v': 100, 'u_h': 179, 'u_s': 255, 'u_v': 190},
+        }
+
+
+def setTrackbarsInitialPosition(hsvValues):
+    # global hsvValues
+    # print(hsvValues)
+    # vals = hsvValues['color_1']
+    # print(vals)
+    # for k, v in vals.items():
+    #     cv2.setTrackbarPos("L - H", "Trackbars", v)
+    # #     print(v)
+    # hsvValues1 = {
+    #     'color_1': {'l_h': hsvValues['color_1']['l_h'], 'l_s': hsvValues['color_1']['l_s'], 'l_v': hsvValues['color_1']['l_v'], 'u_h': hsvValues['color_1']['u_h'], 'u_s': hsvValues['color_1']['u_s'], 'u_v': hsvValues['color_1']['u_v']},
+    # }
+
+    # SetTrackbarPos replaces the elements of the inner dict with zeros!
+    hsvLetters = ["L - H", "L - S", "L - V", "U - H", "U - S", "U - V"]
+    outerKey = list(hsvValues.keys())[0]
+    hsvValues1 = {outerKey: {}}
+    temp = hsvValues[outerKey]
+    for key, value in temp.items():
+        hsvValues1[outerKey][key] = value
+    #    cv2.setTrackbarPos(hsvLetters[i], "Trackbars", hsvValues1[outerKey][key])
+
+    # for ind in range(len(hsvLetters)):
+    #     cv2.setTrackbarPos(hsvLetters[ind], "Trackbars", hsvValues1[outerKey][key])
+
+    cv2.setTrackbarPos("L - H", "Trackbars", hsvValues1[outerKey]['l_h'])
+    cv2.setTrackbarPos("L - S", "Trackbars", hsvValues1[outerKey]['l_s'])
+    cv2.setTrackbarPos("L - V", "Trackbars", hsvValues1[outerKey]['l_v'])
+    cv2.setTrackbarPos("U - H", "Trackbars", hsvValues1[outerKey]['u_h'])
+    cv2.setTrackbarPos("U - S", "Trackbars", hsvValues1[outerKey]['u_s'])
+    cv2.setTrackbarPos("U - V", "Trackbars", hsvValues1[outerKey]['u_v'])
+    # #pass
+
 
 def ProcessImage(val):
     # Get the new values of the trackbar in real time as the user changes them
@@ -113,8 +153,9 @@ def ProcessImage(val):
 
     # Apply morphologial opening and closing.
     # !!! --- Input GRAYSCALE IMAGE --- !!!
+    global mask_3
     mask_3 = mask.copy()
-    #mask_3 = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+    # mask_3 = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
     if morphCloseKernel != 0:
         morphCloseKernel = isEven(morphCloseKernel)
         kernelClose = np.ones((morphCloseKernel, morphCloseKernel), np.uint8)
@@ -133,7 +174,8 @@ def ProcessImage(val):
     cv2.imshow('Results', cv2.resize(stacked, None, fx=0.3, fy=0.3))
     cv2.imwrite(r"D:\side-projects\nuclei\results\temp\bitwiseNoOpenNoClose.jpg", mask_3)
 
-    #CountPixels(mask, hsv, mask_4)
+    # CountPixels(mask, hsv, mask_4)
+
 
 def overlap():
     cv2.destroyWindow("Mask 1 colored");
@@ -143,7 +185,7 @@ def overlap():
     # if plt.fignum_exists(1):
     #     plt.cla()
     #     plt.clf()
-        # plt.close()
+    # plt.close()
 
     mask_1 = plt.imread(r"D:\side-projects\nuclei\results\test-1\1\mask1.jpg")
     ret, mask_1 = cv.threshold(mask_1, 250, 255, cv.THRESH_BINARY)
@@ -167,21 +209,28 @@ def overlap():
 
     # Try 2
     img1_black_pixels_mask = np.all(mask_1 == [0, 0, 0], axis=-1)
-    img1_non_black_pixels_mask = np.any(mask_1 != [0, 0, 0], axis=-1)
+    img1_white_pixels_mask = np.any(mask_1 != [0, 0, 0], axis=-1)
+    # Setting colors instead of masks
+    img1_black[img1_black_pixels_mask] = [0, 0, 0]  # Is it RGB/BGR?
+    img1_black[img1_white_pixels_mask] = [255, 255, 255]
 
-    # Creating mask for white and black
+    # Image 2
     img2_black_pixels_mask = np.all(mask_2 == [0, 0, 0], axis=-1)
-    img2_non_black_pixels_mask = np.any(mask_2 != [0, 0, 0], axis=-1)
-
-   # Setting colors instead of masks
-    img1_black[img1_black_pixels_mask] = [0, 0, 0] #Is it RGB/BGR?
-    img1_black[img1_non_black_pixels_mask] = [255, 0, 0]
-
-    img2_black[img2_black_pixels_mask] = [0, 0, 0] #Is it RGB?
-    img2_black[img2_non_black_pixels_mask] = [0, 255, 0]
+    img2_white_pixels_mask = np.any(mask_2 != [0, 0, 0], axis=-1)
+    # Revert black and white so we can make a difference between img-1 and img2
+    # Where we HAD (PAST) black, replace them with white, and otherwise. Where we had white, replace it with black
+    img2_black[img2_black_pixels_mask] = [255, 255, 255]  # Is it RGB?
+    img2_black[img2_white_pixels_mask] = [0, 0, 0]
 
     stacked2 = np.hstack((img1_black, img2_black))
     cv2.imshow('Mask 1 - Mask 2', cv2.resize(stacked2, None, fx=0.4, fy=0.4))
+
+    # overlap_img = [0, 0, 255]
+    overlap_img[:] = [0, 0, 255]
+    overlap_img[img1_white_pixels_mask] = [255, 255, 255]
+    overlap_img[img2_white_pixels_mask] = [0, 0, 0]
+    # overlap_img[img2_black] = [255, 255, 255]
+    cv2.imshow('overlapped', cv2.resize(overlap_img, None, fx=0.4, fy=0.4))
 
     # for x in height:
     #     for y in width:
@@ -211,6 +260,7 @@ def overlap():
     #
     # img[0:height, 0:width//4, 0:depth] = 0 # DO THIS INSTEAD
 
+
 # def MorphClose(dst):
 #     kernel = cv.getTrackbarPos(trackbar_close, windowName)
 #     closingImg = cv.morphologyEx(dst, cv.MORPH_CLOSE, (256, 256))
@@ -226,6 +276,7 @@ def GaussianBlur(grayImg, ksize):
     # ShowImages(GaussianBlur.__name__, gaussianImg)
     return gaussianImg
 
+
 def isEven(value):
     if (((value % 2) == 1) or (value == 0)):
         pass
@@ -233,9 +284,10 @@ def isEven(value):
         value += 1
     return value
 
+
 def CountPixels(mask, hsv, openimg):
-    #openimg = cv2.cvtColor(openimg, cv2.COLOR_HSV2RGB)
-    #openimg = cv2.cvtColor(openimg, cv2.COLOR_RGB2GRAY)
+    # openimg = cv2.cvtColor(openimg, cv2.COLOR_HSV2RGB)
+    # openimg = cv2.cvtColor(openimg, cv2.COLOR_RGB2GRAY)
     maskShape = mask.shape
     allPixels = 1
     for i in maskShape:
@@ -267,14 +319,18 @@ def CountPixels(mask, hsv, openimg):
 
     print('black pixels (fine) define: ' + str(round(blackPixPerc, 2)) + '%' + ' of the image.')
 
+
 def CountColouredPixels():
     pass
+
 
 def ReportToCSV():
     pass
 
+
 def SaveImage(x):
     pass
+
 
 # defaultImg = np.zeros((300, 300, 3), np.uint8)
 # defaultImg[:] = (0, 0, 255)
@@ -297,6 +353,7 @@ def morphworking():
     pylab.imshow(morph2)
     pylab.show()
 
+
 # Maybe add that settings to the txt file
 def RGBToHSV():
     r, g, b = input("Your lower RGB values: ").split()
@@ -308,8 +365,10 @@ def RGBToHSV():
     hsv_brown_upper = cv2.cvtColor(rgb_brown_upper, cv2.COLOR_RGB2HSV)
     print(hsv_brown_lower, hsv_brown_upper)
 
+
 def main():
-    print("Press \'K\' to convert RGB values to HSV.\n" + "Press \'Q\'/\'W\' to save image 1/image2")
+    print("Press \'K\' to convert RGB values to HSV.\n" + "Press \'Q\'/\'W\' to save image 1 / image 2.\n" + "M and N to load default HSV values.")
+    global hsvValues
 
     # print('Which hich image would you like to process (write it with the file extension)?')
     # global imageToUse
@@ -318,7 +377,8 @@ def main():
     createWindows(0)
     CreateTrackbars(0)
     SetVals(0)
-    setTrackbarsInitialPosition(0)
+    dicValues(1)
+    setTrackbarsInitialPosition(hsvValues)
     # Init that shit
     ProcessImage(0)
 
@@ -328,7 +388,6 @@ def main():
     # if cv2.waitKey(0) & 0xFF == ord("q"):
     #     cv2.destroyAllWindows()
     #     exit()
-
 
     while (1):
         key = cv2.waitKey(0)
@@ -348,7 +407,7 @@ def main():
             cv2.imwrite(r"D:\side-projects\nuclei\results\test-1\2\mask2.jpg", mask_3)
 
             thearray2 = [[hsvValues['color_1']['l_h'], hsvValues['color_1']['l_s'], hsvValues['color_1']['l_v']],
-                        [hsvValues['color_1']['u_h'], hsvValues['color_1']['u_s'], hsvValues['color_1']['u_v']]]
+                         [hsvValues['color_1']['u_h'], hsvValues['color_1']['u_s'], hsvValues['color_1']['u_v']]]
             print(thearray2)
             overlap()
             # Also save this array as penval.npy
@@ -357,10 +416,19 @@ def main():
         elif key == ord('k') & 0xFF == ord("k"):
             RGBToHSV()
 
+        elif key == ord('m') & 0xFF == ord("m"):
+            dicValues(2)
+            setTrackbarsInitialPosition(hsvValues)
+
+        elif key == ord('n') & 0xFF == ord("n"):
+            dicValues(1)
+            setTrackbarsInitialPosition(hsvValues)
+
         else:
             cv2.destroyAllWindows()
             exit()
 
-#morphworking()
-#key = cv2.waitKey(0)
+
+# morphworking()
+# key = cv2.waitKey(0)
 main()
