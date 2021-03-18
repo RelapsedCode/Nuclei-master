@@ -148,9 +148,7 @@ def ProcessImage(val):
     # stack the mask, orginal frame and the filtered result
     stacked = np.hstack((mask_3, img, res))
     cv2.imshow('Results', cv2.resize(stacked, None, fx=0.3, fy=0.3))
-    cv2.imwrite(r"images\results\temp\bitwiseNoOpenNoClose.jpg", mask_3)
-
-    # CountPixels(mask, hsv, mask_4)
+    cv2.imwrite(r"images\results\bitwiseNoOpenNoClose.jpg", mask_3)
 
 
 # Add assertions if the files exist, because if there is not demo image the first run will trow an error when calling this func.
@@ -172,7 +170,7 @@ def overlap():
     ret, mask_2 = cv.threshold(mask_2, 250, 255, cv.THRESH_BINARY)
     mask_2 = cv2.cvtColor(mask_2, cv2.COLOR_BGR2RGB)
 
-    print(mask_1.shape)
+    print("image.shape()", mask_1.shape)
 
     height, width, depth = mask_1.shape
     overlap_img = np.zeros([height, width, depth], dtype=np.uint8)
@@ -190,6 +188,7 @@ def overlap():
     # Setting colors instead of masks
     img1_black[img1_black_pixels_mask] = [0, 0, 0]  # Is it RGB/BGR?
     img1_black[img1_white_pixels_mask] = [255, 255, 255]
+    ret4, img1_black = cv.threshold(img1_black, 250, 255, cv.THRESH_BINARY)
 
     # Image 2
     img2_black_pixels_mask = np.all(mask_2 == [0, 0, 0], axis=-1)
@@ -198,16 +197,20 @@ def overlap():
     # Where we HAD (PAST) black, replace them with white, and otherwise. Where we had white, replace it with black
     img2_black[img2_black_pixels_mask] = [255, 255, 255]  # Is it RGB?
     img2_black[img2_white_pixels_mask] = [0, 0, 0]
+    ret5, img2_black = cv.threshold(img2_black, 250, 255, cv.THRESH_BINARY)
 
     stacked2 = np.hstack((img1_black, img2_black))
     cv2.imshow('Mask 1 - Mask 2', cv2.resize(stacked2, None, fx=0.4, fy=0.4))
 
-    # overlap_img = [0, 0, 255]
     overlap_img[:] = [0, 0, 255]
+
     overlap_img[img1_white_pixels_mask] = [255, 255, 255]
     overlap_img[img2_white_pixels_mask] = [0, 0, 0]
-    # overlap_img[img2_black] = [255, 255, 255]
     cv2.imshow('overlapped', cv2.resize(overlap_img, None, fx=0.4, fy=0.4))
+    cv2.imwrite(r"images\results\overlap.jpg", overlap_img)
+
+    CountPixels(overlap_img)
+    CountPixels(img2_black)
 
     # That works - iot and clear func NOT commented - dynamic closing, otherwise you have to close the image manually
     # pylab.imshow(img1_black)
@@ -221,7 +224,6 @@ def overlap():
     # overlap_img[:] = (0, 0, 255)
     # overlap_img[0:height, 0:width // 4, 0:depth] = 0  # DO THIS INSTEAD
 
-    CountColouredPixels(overlap_img)
 
 def GaussianBlur(grayImg, ksize):
     # windowName.append(GaussianBlur.__name__)
@@ -240,89 +242,21 @@ def isEven(value):
     return value
 
 
-def CountPixels(mask, hsv, openimg):
-    # openimg = cv2.cvtColor(openimg, cv2.COLOR_HSV2RGB)
-    # openimg = cv2.cvtColor(openimg, cv2.COLOR_RGB2GRAY)
-    maskShape = mask.shape
-    allPixels = 1
-    for i in maskShape:
-        allPixels *= i
-    # print('simple for loop: ' + str(allPixels))
-    allPixels2 = reduce(lambda x, y: x * y, maskShape)
-    # print('lambda expression: ' + str(allPixels2))
-    allPixels3 = mask.size
-    # print('img.size function: ' + str(allPixels3))
+def CountPixels(img):
+    redPix = np.count_nonzero(np.all(img == [0, 0, 255], axis=2))
+    whitePix = np.count_nonzero(np.all(img == [255, 255, 255], axis=2))
+    blackPix = np.count_nonzero(np.all(img == [0, 0, 0], axis=2))
 
-    whitePixels = cv2.countNonZero(mask)
-    # print('white pixelstry.py: ' + str(whitePixels))
-
-    # Morph open pixs
-    whitePixOpen = cv2.countNonZero(openimg)
-    # print('white pixelstry.py: ' + str(whitePixels))
-
-    blackPixels = allPixels - whitePixels
-    # print('black pixes:' + str(blackPixels))
-
-    whitePixPerc = (whitePixels / allPixels) * 100
-
-    whitePixOpenPerc = (whitePixOpen / allPixels) * 100
-
-    blackPixPerc = (blackPixels / allPixels) * 100
-
-    print('white pixels (cancerogenni) define: ' + str(round(whitePixPerc, 2)) + '%' + ' of the image.')
-    print('white OPEN pixels (cancerogenni) define: ' + str(round(whitePixOpenPerc, 2)) + '%' + ' of the image.')
-
-    print('black pixels (fine) define: ' + str(round(blackPixPerc, 2)) + '%' + ' of the image.')
+    height, width, depth = img.shape
+    allPixels = height*width
+    print('All pixels: ' + str(allPixels))
+    print('Red pixels are: ' + str(round(((redPix / allPixels) * 100), 2)) + '%' + ' of the image.')
+    print('White pixels are: ' + str(round(((whitePix / allPixels) * 100), 2)) + '%' + ' of the image.')
+    print('Black pixels are: ' + str(round(((blackPix / allPixels) * 100), 2)) + '%' + ' of the image.')
+    print('Others pixels are: ' + str((allPixels) - (redPix+whitePix + blackPix)) + '. If this value is different than 0 than you have a problem.')
 
 
-def CountColouredPixels(mask):
-    maskShape = mask.shape
-    allPixels = 1
-    for i in maskShape:
-        allPixels *= i
-    print('simple for loop: ' + str(allPixels))
-    allPixels2 = reduce(lambda x, y: x * y, maskShape)
-    print('lambda expression: ' + str(allPixels2))
-    allPixels3 = mask.size
-    print('img.size function: ' + str(allPixels3))
-
-    blackPixelsNumber = 0
-    whitePixelsNumber = 0
-    redPixelsNumber = 0
-    otherPixelsValues = 0
-
-
-
-    # for i in np.ndindex(mask.shape[:2]):
-    #     if i == (0, 0, 0):
-    #         blackPixelsNumber += 1
-    #     elif i == (255, 255, 255):
-    #         whitePixelsNumber += 1
-    #     elif i == (0, 0, 255):
-    #         redPixelsNumber += 1
-    #     else:
-    #         otherPixelsValues += 1
-
-    if (otherPixelsValues != 0):
-        print("It seems like your image contains more colours than are specified. Check if the image is thresholded properly.")
-
-    im = mask.copy()
-
-    white = [255, 255, 255]
-
-    result = np.count_nonzero(np.all(im == white, axis=2))
-    print( result, " out of ", allPixels)
-    # whitePixPerc = (result2 / allPixels) * 100
-    # blackPixPerc = (white / allPixels) * 100
-    # redPixPerc = (result3 / allPixels) * 100
-
-    # print('White pixels are: ' + str(round(whitePixPerc, 2)) + '%' + ' of the image.')
-    print('Black pixels are: ' + str(round(result, 2)) + '%' + ' of the image.')
-    # print('Red pixels are: ' + str(round(redPixPerc, 2)) + '%' + ' of the image.')
-    # print('Others pixels are: ' + str(round(otherPixelsValues, 2)) + '%' + ' of the image. If this value is different than 0 than you have a problem.')
-
-
-def ReportToCSV():
+def ExportToCSV():
     pass
 
 
