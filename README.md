@@ -9,6 +9,8 @@ Place the desired image in "..\nuclei\images\source-img.jpg". The image has to b
 * Q | save the image as image 1
 * W | save the image as image 2
 * ESC | close the application
-
-![test](https://github.com/favicon.ico)
-
+___
+![](https://github.com/RelapsedCode/Nuclei-master/blob/main/demo-images/Capture.PNG)
+![](https://github.com/RelapsedCode/Nuclei-master/blob/main/demo-images/Capture2.PNG)
+![](https://github.com/RelapsedCode/Nuclei-master/blob/main/demo-images/Capture3.PNG)
+![](https://github.com/RelapsedCode/Nuclei-master/blob/main/demo-images/Capture4.PNG)
