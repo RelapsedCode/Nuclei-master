@@ -14,5 +14,8 @@ ___
 ![Initial window showing the color which we are isolating](https://github.com/RelapsedCode/Nuclei-master/blob/main/demo-images/Capture.PNG)
 ___
 ![Trackbar values](https://github.com/RelapsedCode/Nuclei-master/blob/main/demo-images/Capture2.PNG)
+___
 ![Masks of both collors compared](https://github.com/RelapsedCode/Nuclei-master/blob/main/demo-images/Capture3.PNG)
+___
 ![Final result](https://github.com/RelapsedCode/Nuclei-master/blob/main/demo-images/Capture4.PNG)
+___
