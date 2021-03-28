@@ -210,7 +210,6 @@ def overlap():
     cv2.imwrite(r"images\results\overlap.jpg", overlap_img)
 
     CountPixels(overlap_img)
-    CountPixels(img2_black)
 
     # That works - iot and clear func NOT commented - dynamic closing, otherwise you have to close the image manually
     # pylab.imshow(img1_black)
